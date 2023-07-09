@@ -28,7 +28,7 @@ export default function DefineRoutesHere() {
       }
       // Else set logged-in user in state to null
       setLoggedInUser(null);
-      console.log(userObj);
+      //console.log(userObj);
     });
   }, [loggedInUser]);
 

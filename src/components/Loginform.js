@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
+import Alert from "@mui/material/Alert";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../config";
 import "../App.css";
@@ -9,15 +10,25 @@ import "../App.css";
 const Login = () => {
   const [inputEmail, inputEmailValue] = useState("");
   const [inputPwd, inputPwdValue] = useState("");
+  const [authAlerts, setAuthAlerts] = useState("");
   const navigate = useNavigate();
 
-  const logInWithEmailAndPassword = async (email, password) => {
-    try {
-      await signInWithEmailAndPassword(auth, email, password);
-    } catch (err) {
+  const logInWithEmailAndPassword = (email, password) => {
+    return signInWithEmailAndPassword(auth, email, password).then(() => {
+      setAuthAlerts("Successfully logged in!");
+      inputEmailValue("");
+      inputPwdValue("");
+      navigate("/");
+    }).catch((err) => {
       console.error(err);
-      alert(err.message);
-    }
+      if (err.code === `auth/wrong-password`) {
+        setAuthAlerts("Wrong password. Please try again.");
+      } else if (err.code === `auth/too-many-requests`) {
+        setAuthAlerts(
+          "Access to this account has been temporarily disabled due to many failed login attempts. You can immediately restore it by resetting your password or you can try again later."
+        );
+      }
+    });
   };
 
   const handleChange = (e) => {
@@ -30,20 +41,13 @@ const Login = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    logInWithEmailAndPassword(inputEmail, inputPwd)
-      .then(() => {
-        inputEmailValue("");
-        inputPwdValue("");
-        navigate("/");
-      })
-      .catch((error) => {
-        console.log(error);
-        alert(error.message);
-      });
+    logInWithEmailAndPassword(inputEmail, inputPwd);
   };
 
   return (
     <div className="centered">
+      {authAlerts !== "" && <Alert severity="error">{authAlerts}</Alert>}
+      {authAlerts === "Successfully logged in!" && <Alert severity="success">{authAlerts}</Alert>}
       <p style={{ textAlign: "right", fontSize: 15 }}>
         Don't have an account ? Click{" "}
         <Link to="/auth/register" style={{ color: "yellow" }}>
