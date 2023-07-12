@@ -40,7 +40,6 @@ function ImgClassify() {
         )
         .then(function (response) {
           // handle success
-          console.log(response.data);
           const results = response.data;
           setCategory(results.category);
           setNutrition(results.nutrition);

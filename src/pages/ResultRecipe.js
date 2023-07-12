@@ -91,7 +91,6 @@ function ResultRecipe() {
         );
         const recipe = response.data;
         setDetails(recipe);
-        console.log(recipe);
       } catch (error) {
         console.error("Error fetching recipe:", error);
       }

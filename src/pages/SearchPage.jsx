@@ -24,7 +24,7 @@ function SearchPage({ isHomePage }) {
 
   const getSearchResults = async (name) => {
     const data = await fetch(
-      `https://api.spoonacular.com/recipes/complexSearch?apiKey=${process.env.REACT_APP_API_KEY}&query=${name}&number=9`
+      `https://api.spoonacular.com/recipes/complexSearch?apiKey=${process.env.REACT_APP_API_KEY}&query=${name}&number=6`
     );
     const recipes = await data.json();
     setSearchedRecipes(
@@ -45,7 +45,7 @@ function SearchPage({ isHomePage }) {
 
   const handleShare = (event, item) => {
     event.preventDefault();
-    const recipeURL = `localhost:3000/recipe/${item.id}`;
+    const recipeURL = `thespork-b06ef.web.app/recipe/${item.id}`;
 
     if (event.currentTarget.id === "facebook") {
       const link = `https://www.facebook.com/sharer/sharer.php?u=${recipeURL}`;

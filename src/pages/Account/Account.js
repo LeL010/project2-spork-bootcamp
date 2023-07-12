@@ -85,13 +85,10 @@ const ProfilePage = () => {
       }
       // Else set logged-in user in state to null
       setLoggedInUser(null);
-      console.log(loggedInUser);
     });
   }, [userId, loggedInUser]);
 
   function reauthenticate(currPwd) {
-    console.log("currentPassword in reauthenticate", currPwd);
-
     let credential = EmailAuthProvider.credential(loggedInUser.email, currPwd);
     return reauthenticateWithCredential(loggedInUser, credential);
   }
@@ -122,7 +119,6 @@ const ProfilePage = () => {
         },
         () => {
           getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-            console.log(downloadURL);
             set(currentUserRef, {
               name: name,
               authProvider: provider,
@@ -204,7 +200,6 @@ const ProfilePage = () => {
         .catch((error) => {
           setError("Current Password is incorrect.");
           setCurrentPassword("");
-          console.log(error);
         });
     } else {
       writeData();

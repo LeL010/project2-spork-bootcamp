@@ -20,8 +20,8 @@ const Googlemap = () => {
   const [infoWindowData, setInfoWindowData] = useState();
 
   const [error, setError] = useState("");
-  const [currlat, setCurrLat] = useState(0);
-  const [currLng, setCurrLng] = useState(0);
+  //const [currlat, setCurrLat] = useState(0);
+  //const [currLng, setCurrLng] = useState(0);
 
   function showError(error) {
     // eslint-disable-next-line default-case
@@ -44,53 +44,38 @@ const Googlemap = () => {
   const markers = JSON.parse(localStorage.getItem("markers") || "[]");
 
   const onMapLoad = (map) => {
-    let currLat;
-    let currLong;
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(function (position) {
-        setCurrLat(position.coords.latitude);
-        setCurrLng(position.coords.longitude);
-        currLat = position.coords.latitude;
-        currLong = position.coords.longitude;
+        let currLat = position.coords.latitude;
+        let currLong = position.coords.longitude;
+        let pyrmont = new window.google.maps.LatLng(currLat, currLong);
+
+        let request = {
+          location: pyrmont,
+          radius: "500",
+          type: ["supermarket"],
+        };
+
+        let service = new window.google.maps.places.PlacesService(map);
+        const bounds = new window.google.maps.LatLngBounds();
+        service.nearbySearch(request, (results, status) => {
+          if (status === window.google.maps.places.PlacesServiceStatus.OK) {
+            const superMarkers = results.map((result) => ({
+              address: result.name,
+              lat: result.geometry.location.lat(),
+              lng: result.geometry.location.lng(),
+            }));
+            localStorage.setItem("markers", JSON.stringify(superMarkers));
+          }
+        });
+
+        markers?.forEach(({ lat, lng }) => bounds.extend({ lat, lng }));
+        map.fitBounds(bounds);
+        setMapRef(map);
       }, showError);
     } else {
       setError("Geolocation is not supported by this browser.");
     }
-
-    let pyrmont;
-
-    if (currlat !== currLat && currLng !== currLong) {
-      pyrmont = new window.google.maps.LatLng(currlat, currLng);
-    } else {
-      pyrmont = new window.google.maps.LatLng(1.29027, 103.851959);
-    }
-
-    let request = {
-      location: pyrmont,
-      radius: "500",
-      type: ["supermarket"],
-    };
-
-    let service = new window.google.maps.places.PlacesService(map);
-    const bounds = new window.google.maps.LatLngBounds();
-    service.nearbySearch(request, (results, status) => {
-      if (status === window.google.maps.places.PlacesServiceStatus.OK) {
-        console.log(results);
-
-        const superMarkers = results.map((result) => ({
-          address: result.name,
-          lat: result.geometry.location.lat(),
-          lng: result.geometry.location.lng(),
-        }));
-        localStorage.setItem("markers", JSON.stringify(superMarkers));
-      }
-    });
-
-    //console.log(markers);
-
-    markers?.forEach(({ lat, lng }) => bounds.extend({ lat, lng }));
-    map.fitBounds(bounds);
-    setMapRef(map);
   };
 
   const handleMarkerClick = (id, lat, lng, address) => {

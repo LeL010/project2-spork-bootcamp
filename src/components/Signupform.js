@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import TextField from "@mui/material/TextField";
 import Form from "react-bootstrap/Form";
@@ -78,11 +78,6 @@ const Signup = () => {
 
   const navigate = useNavigate();
 
-  useEffect(() => {
-    //console.log(passwordInputValue);
-    //console.log(pwdError);
-  });
-
   const getGoogleAccDetails = (user) => {
     const usersCollection = databaseRef(database, REALTIME_DATABASE_USERS_KEY);
 
@@ -102,15 +97,13 @@ const Signup = () => {
               if (snapshot.exists()) {
                 snapshot.forEach((childSnapshot) => {
                   //const childKey = childSnapshot.key;
-                  const childData = childSnapshot.val();
-                  console.log(childData);
+                  //const childData = childSnapshot.val();
+                  
                   navigate("/");
                   // ...
                 });
               } else {
                 const newUsersRef = child(usersCollection, user.uid);
-                //const newUsersRef = push(usersCollection);
-
                 set(newUsersRef, {
                   name: user.displayName,
                   authProvider: "google",
@@ -140,7 +133,6 @@ const Signup = () => {
         }
       })
       .catch((error) => {
-        console.error(error);
         setErrorAlert(`${error.code} : ${error.message}`);
       });
   };
@@ -152,7 +144,6 @@ const Signup = () => {
         getGoogleAccDetails(user);
       })
       .catch((error) => {
-        console.error(error);
         setErrorAlert(`${error.code} : ${error.message}`);
       });
   };
